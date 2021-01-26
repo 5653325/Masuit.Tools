@@ -12,8 +12,6 @@ namespace Masuit.Tools.Systems
     /// </summary>
     public class RedisLock : IDisposable
     {
-        #region Property
-
         private bool _isDisposed;
 
         /// <summary>
@@ -79,11 +77,7 @@ namespace Masuit.Tools.Systems
 
         private readonly ConcurrentDictionary<string, CancellationTokenSource> _expirationRenewalMap = new ConcurrentDictionary<string, CancellationTokenSource>();
 
-        private ConnectionMultiplexer _server;
-
-        #endregion
-
-        #region Constructor
+        private readonly ConnectionMultiplexer _server;
 
         /// <summary>
         /// 默认连接127.0.0.1:6379,synctimeout=20000
@@ -95,10 +89,6 @@ namespace Masuit.Tools.Systems
             _server.PreserveAsyncOrder = false;
         }
 
-        #endregion
-
-
-        #region Public
 
         /// <summary>
         /// 加锁
@@ -194,15 +184,9 @@ namespace Masuit.Tools.Systems
             return _server.GetDatabase().ScriptEvaluate(UnLockScript, key, values);
         }
 
-        #endregion
-
-
-        #region Private
 
         private void Subscriber(RedisKey resource)
         {
-            //Console.WriteLine("Thread ID:" + Thread.CurrentThread.ManagedThreadId + "　订阅广播");
-            //var aa = Thread.CurrentThread.ManagedThreadId;
             ISubscriber sub = _server.GetSubscriber();
             sub.Subscribe(GetChannelName(resource), (channel, message) =>
             {
@@ -322,8 +306,6 @@ namespace Masuit.Tools.Systems
             }
         }
 
-        #endregion
-
         /// <summary>执行与释放或重置非托管资源关联的应用程序定义的任务。</summary>
         public void Dispose()
         {
@@ -344,7 +326,6 @@ namespace Masuit.Tools.Systems
 
             _server?.Dispose();
             _isDisposed = true;
-            //_server = null;
         }
     }
 }

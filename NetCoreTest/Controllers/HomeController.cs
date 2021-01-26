@@ -1,17 +1,20 @@
-﻿using Masuit.Tools.Core.NoSQL;
-using Masuit.Tools.NoSQL;
+﻿using Masuit.Tools.Security;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace NetCoreTest.Controllers
 {
     public class HomeController : Controller
     {
-        public RedisHelper RedisHelper { get; set; }
-        public HomeController(RedisHelperFactory redisHelperFactory)
+        [HttpGet("rsaenc")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public async Task<IActionResult> Rsa(string str)
         {
-            RedisHelper = redisHelperFactory.Create("aa", 0);// 创建命名为aa的RedisHelper，指定数据库0
-            RedisHelper = redisHelperFactory.CreateDefault(0); // 创建默认的RedisHelper，指定数据库0
-            RedisHelper = redisHelperFactory.CreateLocal(0); // 创建连接本机的RedisHelper，指定数据库0
+            var rsaKey = RsaCrypt.GenerateRsaKeys();
+            var enc = str.RSAEncrypt();
+            var dec = enc.RSADecrypt();
+            return Ok(dec);
         }
     }
 }
